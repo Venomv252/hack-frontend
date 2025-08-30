@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Activity, 
-  Heart, 
-  Thermometer, 
-  Battery, 
-  MapPin, 
+import {
+  Activity,
+  Heart,
+  Thermometer,
+  Battery,
+  MapPin,
   AlertTriangle,
   TrendingUp,
   Clock,
@@ -119,17 +119,17 @@ const SensorData = () => {
 
     if (diffInMinutes < 1) return 'Just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
+
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours}h ago`;
-    
+
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays}d ago`;
   };
 
   const getAccelerationStatus = (acc) => {
     if (!acc) return { color: '#6b7280', status: 'No data' };
-    const total = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+    const total = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
     if (total > 15) return { color: '#ef4444', status: 'High Impact' };
     if (total < 2) return { color: '#f59e0b', status: 'Low Activity' };
     return { color: '#10b981', status: 'Normal' };
@@ -137,7 +137,7 @@ const SensorData = () => {
 
   const getGyroscopeStatus = (gyro) => {
     if (!gyro) return { color: '#6b7280', status: 'No data' };
-    const total = Math.sqrt(gyro.x*gyro.x + gyro.y*gyro.y + gyro.z*gyro.z);
+    const total = Math.sqrt(gyro.x * gyro.x + gyro.y * gyro.y + gyro.z * gyro.z);
     if (total > 200) return { color: '#ef4444', status: 'Rapid Movement' };
     if (total > 100) return { color: '#f59e0b', status: 'Active' };
     return { color: '#10b981', status: 'Stable' };
@@ -150,9 +150,9 @@ const SensorData = () => {
       const res = await axios.post(`${API_BASE_URL}/api/sensor/test`, {}, {
         headers: { 'x-auth-token': token }
       });
-      
+
       toast.success('Test sensor data generated successfully!');
-      
+
       // Refresh all data
       await Promise.all([
         fetchLatestData(),
@@ -212,21 +212,19 @@ const SensorData = () => {
         <div className="flex gap-2 mb-8">
           <button
             onClick={() => setActiveTab('current')}
-            className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
-              activeTab === 'current'
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
+            className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'current'
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
           >
             Current Status
           </button>
           <button
             onClick={() => setActiveTab('activity')}
-            className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
-              activeTab === 'activity'
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
+            className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'activity'
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
           >
             Recent Activity ({recentActivity.length})
           </button>
@@ -239,11 +237,10 @@ const SensorData = () => {
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  period === p
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${period === p
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
               >
                 {p === '1h' ? '1 Hour' : p === '24h' ? '24 Hours' : p === '7d' ? '7 Days' : '30 Days'}
               </button>
@@ -267,218 +264,218 @@ const SensorData = () => {
               </div>
             </div>
           ) : (
-          <>
-            {/* Current Status Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {/* Accelerometer */}
-              <div className="card p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <Activity style={{ width: '24px', height: '24px', color: '#3b82f6' }} />
-                  <span className="text-xs text-gray-400">
-                    {formatTime(latestData.createdAt)}
-                  </span>
+            <>
+              {/* Current Status Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {/* Accelerometer */}
+                <div className="card p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Activity style={{ width: '24px', height: '24px', color: '#3b82f6' }} />
+                    <span className="text-xs text-gray-400">
+                      {formatTime(latestData.createdAt)}
+                    </span>
+                  </div>
+                  <div className="text-lg font-bold text-white mb-2">Accelerometer</div>
+                  {latestData.accelerometer ? (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">X:</span>
+                        <span className="text-white">{latestData.accelerometer.x.toFixed(2)}g</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Y:</span>
+                        <span className="text-white">{latestData.accelerometer.y.toFixed(2)}g</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Z:</span>
+                        <span className="text-white">{latestData.accelerometer.z.toFixed(2)}g</span>
+                      </div>
+                      <div
+                        className="text-sm font-medium mt-2"
+                        style={{ color: getAccelerationStatus(latestData.accelerometer).color }}
+                      >
+                        {getAccelerationStatus(latestData.accelerometer).status}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400">No data</div>
+                  )}
                 </div>
-                <div className="text-lg font-bold text-white mb-2">Accelerometer</div>
-                {latestData.accelerometer ? (
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">X:</span>
-                      <span className="text-white">{latestData.accelerometer.x.toFixed(2)}g</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Y:</span>
-                      <span className="text-white">{latestData.accelerometer.y.toFixed(2)}g</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Z:</span>
-                      <span className="text-white">{latestData.accelerometer.z.toFixed(2)}g</span>
-                    </div>
-                    <div 
-                      className="text-sm font-medium mt-2"
-                      style={{ color: getAccelerationStatus(latestData.accelerometer).color }}
-                    >
-                      {getAccelerationStatus(latestData.accelerometer).status}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-gray-400">No data</div>
-                )}
-              </div>
 
-              {/* Gyroscope */}
-              <div className="card p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <TrendingUp style={{ width: '24px', height: '24px', color: '#10b981' }} />
-                  <span className="text-xs text-gray-400">
-                    {formatTime(latestData.createdAt)}
-                  </span>
+                {/* Gyroscope */}
+                <div className="card p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <TrendingUp style={{ width: '24px', height: '24px', color: '#10b981' }} />
+                    <span className="text-xs text-gray-400">
+                      {formatTime(latestData.createdAt)}
+                    </span>
+                  </div>
+                  <div className="text-lg font-bold text-white mb-2">Gyroscope</div>
+                  {latestData.gyroscope ? (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">X:</span>
+                        <span className="text-white">{latestData.gyroscope.x.toFixed(2)}°/s</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Y:</span>
+                        <span className="text-white">{latestData.gyroscope.y.toFixed(2)}°/s</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Z:</span>
+                        <span className="text-white">{latestData.gyroscope.z.toFixed(2)}°/s</span>
+                      </div>
+                      <div
+                        className="text-sm font-medium mt-2"
+                        style={{ color: getGyroscopeStatus(latestData.gyroscope).color }}
+                      >
+                        {getGyroscopeStatus(latestData.gyroscope).status}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400">No data</div>
+                  )}
                 </div>
-                <div className="text-lg font-bold text-white mb-2">Gyroscope</div>
-                {latestData.gyroscope ? (
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">X:</span>
-                      <span className="text-white">{latestData.gyroscope.x.toFixed(2)}°/s</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Y:</span>
-                      <span className="text-white">{latestData.gyroscope.y.toFixed(2)}°/s</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Z:</span>
-                      <span className="text-white">{latestData.gyroscope.z.toFixed(2)}°/s</span>
-                    </div>
-                    <div 
-                      className="text-sm font-medium mt-2"
-                      style={{ color: getGyroscopeStatus(latestData.gyroscope).color }}
-                    >
-                      {getGyroscopeStatus(latestData.gyroscope).status}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-gray-400">No data</div>
-                )}
-              </div>
 
-              {/* GPS Location */}
-              <div className="card p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <MapPin style={{ width: '24px', height: '24px', color: '#10b981' }} />
-                  <span className="text-xs text-gray-400">
-                    {formatTime(latestData.createdAt)}
-                  </span>
-                </div>
-                <div className="text-lg font-bold text-white mb-2">GPS Location</div>
-                {latestData.location ? (
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Latitude:</span>
-                      <span className="text-white">{latestData.location.latitude.toFixed(6)}°</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Longitude:</span>
-                      <span className="text-white">{latestData.location.longitude.toFixed(6)}°</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Accuracy:</span>
-                      <span className="text-white">±{latestData.location.accuracy || 10}m</span>
-                    </div>
-                    <div 
-                      className="text-sm font-medium mt-2"
-                      style={{ color: '#10b981' }}
-                    >
-                      GPS Active
-                    </div>
+                {/* GPS Location */}
+                <div className="card p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <MapPin style={{ width: '24px', height: '24px', color: '#10b981' }} />
+                    <span className="text-xs text-gray-400">
+                      {formatTime(latestData.createdAt)}
+                    </span>
                   </div>
-                ) : (
-                  <div className="text-gray-400">No GPS data</div>
-                )}
-              </div>
-            </div>
-
-            {/* Analytics */}
-            {analytics && (
-              <div className="card p-6 mb-8">
-                <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                  <TrendingUp style={{ width: '20px', height: '20px' }} />
-                  Analytics ({period})
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-3">Movement Data</h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">Total Readings:</span>
-                        <span className="text-white font-medium">{analytics.analytics.totalReadings}</span>
+                  <div className="text-lg font-bold text-white mb-2">GPS Location</div>
+                  {latestData.location ? (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Latitude:</span>
+                        <span className="text-white">{latestData.location.latitude.toFixed(6)}°</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">Fall Alerts:</span>
-                        <span className="text-red-400 font-medium">{analytics.analytics.fallCount}</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Longitude:</span>
+                        <span className="text-white">{latestData.location.longitude.toFixed(6)}°</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">Emergency Alerts:</span>
-                        <span className="text-yellow-400 font-medium">{analytics.analytics.emergencyCount}</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Accuracy:</span>
+                        <span className="text-white">±{latestData.location.accuracy || 10}m</span>
+                      </div>
+                      <div
+                        className="text-sm font-medium mt-2"
+                        style={{ color: '#10b981' }}
+                      >
+                        GPS Active
                       </div>
                     </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-3">Device Health</h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">Connection:</span>
-                        <span className="text-green-400 font-medium">Stable</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">Data Quality:</span>
-                        <span className="text-green-400 font-medium">Good</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">Update Rate:</span>
-                        <span className="text-white font-medium">5s</span>
-                      </div>
-                    </div>
-                  </div>
+                  ) : (
+                    <div className="text-gray-400">No GPS data</div>
+                  )}
                 </div>
               </div>
-            )}
 
-            {/* Recent History */}
-            <div className="card p-6">
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                <Clock style={{ width: '20px', height: '20px' }} />
-                Recent Readings
-              </h3>
-              
-              <div className="space-y-4">
-                {history.length === 0 ? (
-                  <p className="text-gray-400 text-center py-4">No historical data available</p>
-                ) : (
-                  history.map((reading, index) => (
-                    <div key={reading._id || index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="text-sm text-gray-400">
-                          {new Date(reading.createdAt).toLocaleString()}
+              {/* Analytics */}
+              {analytics && (
+                <div className="card p-6 mb-8">
+                  <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                    <TrendingUp style={{ width: '20px', height: '20px' }} />
+                    Analytics ({period})
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-400 mb-3">Movement Data</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Total Readings:</span>
+                          <span className="text-white font-medium">{analytics.analytics.totalReadings}</span>
                         </div>
-                        {(reading.emergencyTriggered || reading.fallDetected) && (
-                          <AlertTriangle style={{ width: '16px', height: '16px', color: '#ef4444' }} />
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center gap-6 text-sm">
-                        {reading.accelerometer && (
-                          <div className="flex items-center gap-1">
-                            <Activity style={{ width: '14px', height: '14px', color: '#3b82f6' }} />
-                            <span className="text-white">
-                              {Math.sqrt(
-                                reading.accelerometer.x**2 + 
-                                reading.accelerometer.y**2 + 
-                                reading.accelerometer.z**2
-                              ).toFixed(1)}g
-                            </span>
-                          </div>
-                        )}
-                        {reading.gyroscope && (
-                          <div className="flex items-center gap-1">
-                            <TrendingUp style={{ width: '14px', height: '14px', color: '#10b981' }} />
-                            <span className="text-white">
-                              {Math.sqrt(
-                                reading.gyroscope.x**2 + 
-                                reading.gyroscope.y**2 + 
-                                reading.gyroscope.z**2
-                              ).toFixed(1)}°/s
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Fall Alerts:</span>
+                          <span className="text-red-400 font-medium">{analytics.analytics.fallCount}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Emergency Alerts:</span>
+                          <span className="text-yellow-400 font-medium">{analytics.analytics.emergencyCount}</span>
+                        </div>
                       </div>
                     </div>
-                  ))
-                )}
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-400 mb-3">Device Health</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Connection:</span>
+                          <span className="text-green-400 font-medium">Stable</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Data Quality:</span>
+                          <span className="text-green-400 font-medium">Good</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Update Rate:</span>
+                          <span className="text-white font-medium">5s</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent History */}
+              <div className="card p-6">
+                <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                  <Clock style={{ width: '20px', height: '20px' }} />
+                  Recent Readings
+                </h3>
+
+                <div className="space-y-4">
+                  {history.length === 0 ? (
+                    <p className="text-gray-400 text-center py-4">No historical data available</p>
+                  ) : (
+                    history.map((reading, index) => (
+                      <div key={reading._id || index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                        <div className="flex items-center gap-4">
+                          <div className="text-sm text-gray-400">
+                            {new Date(reading.createdAt).toLocaleString()}
+                          </div>
+                          {(reading.emergencyTriggered || reading.fallDetected) && (
+                            <AlertTriangle style={{ width: '16px', height: '16px', color: '#ef4444' }} />
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-6 text-sm">
+                          {reading.accelerometer && (
+                            <div className="flex items-center gap-1">
+                              <Activity style={{ width: '14px', height: '14px', color: '#3b82f6' }} />
+                              <span className="text-white">
+                                {Math.sqrt(
+                                  reading.accelerometer.x ** 2 +
+                                  reading.accelerometer.y ** 2 +
+                                  reading.accelerometer.z ** 2
+                                ).toFixed(1)}g
+                              </span>
+                            </div>
+                          )}
+                          {reading.gyroscope && (
+                            <div className="flex items-center gap-1">
+                              <TrendingUp style={{ width: '14px', height: '14px', color: '#10b981' }} />
+                              <span className="text-white">
+                                {Math.sqrt(
+                                  reading.gyroscope.x ** 2 +
+                                  reading.gyroscope.y ** 2 +
+                                  reading.gyroscope.z ** 2
+                                ).toFixed(1)}°/s
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )
+            </>
+          )
         ) : (
           // Recent Activity Tab
           <div className="space-y-6">
@@ -513,7 +510,7 @@ const SensorData = () => {
                 <Activity style={{ width: '20px', height: '20px' }} />
                 All ESP32 Sensor Data
               </h3>
-              
+
               {recentActivity.length === 0 ? (
                 <div className="text-center py-8">
                   <Smartphone className="mx-auto mb-4" style={{ width: '48px', height: '48px', color: '#6b7280' }} />
@@ -523,17 +520,17 @@ const SensorData = () => {
               ) : (
                 <div className="space-y-4">
                   {recentActivity.map((item, index) => (
-                    <div key={item.id || index} className="p-4 bg-gray-800/50 rounded-lg border-l-4" 
-                         style={{ borderLeftColor: getStatusColor(item.status) }}>
+                    <div key={item.id || index} className="p-4 bg-gray-800/50 rounded-lg border-l-4"
+                      style={{ borderLeftColor: getStatusColor(item.status) }}>
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <Smartphone style={{ width: '16px', height: '16px', color: '#6b7280' }} />
                             <span className="text-sm font-medium text-white">{item.deviceId}</span>
                           </div>
-                          <div 
+                          <div
                             className="px-2 py-1 rounded text-xs font-medium"
-                            style={{ 
+                            style={{
                               backgroundColor: getStatusColor(item.status) + '20',
                               color: getStatusColor(item.status)
                             }}

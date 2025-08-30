@@ -228,6 +228,10 @@ const Dashboard = () => {
       
       if (error.response?.status === 404 && error.response?.data?.message === 'No location data available') {
         toast.error('No GPS location available. Please ensure your device is sending location data.', { id: 'location-share' });
+      } else if (error.response?.status === 503 && error.response?.data?.message?.includes('SMS service is not configured')) {
+        toast.error('SMS service is not configured on the server. Please contact administrator.', { id: 'location-share' });
+      } else if (error.response?.status === 404 && error.response?.data?.message === 'User not found') {
+        toast.error('User not found. Please log in again.', { id: 'location-share' });
       } else {
         toast.error('Failed to share location. Please try again.', { id: 'location-share' });
       }
