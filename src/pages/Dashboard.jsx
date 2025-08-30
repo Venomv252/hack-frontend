@@ -196,21 +196,39 @@ const Dashboard = () => {
 
       toast.loading('Sending emergency location SMS...', { id: 'location-share' });
 
-      const response = await axios.post(`${API_BASE_URL}/api/emergency/share-location`, {}, {
-        headers: { 'x-auth-token': token }
-      });
+      let response;
+      try {
+        // Try the real endpoint first
+        response = await axios.post(`${API_BASE_URL}/api/emergency/share-location`, {}, {
+          headers: { 'x-auth-token': token }
+        });
+      } catch (mainError) {
+        // If Twilio is not configured, try the test endpoint
+        if (mainError.response?.status === 503 && mainError.response?.data?.message?.includes('SMS service is not configured')) {
+          console.log('Twilio not configured, using test mode...');
+          toast.loading('SMS service not configured. Using test mode...', { id: 'location-share' });
+          
+          response = await axios.post(`${API_BASE_URL}/api/emergency/share-location-test`, {}, {
+            headers: { 'x-auth-token': token }
+          });
+        } else {
+          throw mainError; // Re-throw if it's a different error
+        }
+      }
 
-      const { results, errors, summary } = response.data;
+      const { results, errors, summary, testMode } = response.data;
 
       if (summary.successful > 0) {
+        const modeText = testMode ? ' (TEST MODE - No actual SMS sent)' : '';
         toast.success(
-          `Location shared successfully! ${summary.successful}/${summary.totalContacts} contacts notified.`,
+          `Location shared successfully! ${summary.successful}/${summary.totalContacts} contacts notified.${modeText}`,
           { id: 'location-share', duration: 5000 }
         );
 
         // Log successful contacts
         results.forEach(result => {
-          console.log(`✅ SMS sent to ${result.contact}: ${result.messageSid}`);
+          const statusText = testMode ? '[SIMULATED]' : '';
+          console.log(`✅ ${statusText} SMS sent to ${result.contact}: ${result.messageSid}`);
         });
 
         // Log any errors
