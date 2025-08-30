@@ -243,31 +243,39 @@ const SensorData = () => {
                 )}
               </div>
 
-              {/* Device Status */}
+              {/* GPS Location */}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <Smartphone style={{ width: '24px', height: '24px', color: '#f59e0b' }} />
+                  <MapPin style={{ width: '24px', height: '24px', color: '#10b981' }} />
                   <span className="text-xs text-gray-400">
                     {formatTime(latestData.createdAt)}
                   </span>
                 </div>
-                <div className="text-lg font-bold text-white mb-2">ESP32 Status</div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Device:</span>
-                    <span className="text-white">{latestData.deviceId || 'ESP32_001'}</span>
+                <div className="text-lg font-bold text-white mb-2">GPS Location</div>
+                {latestData.location ? (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Latitude:</span>
+                      <span className="text-white">{latestData.location.latitude.toFixed(6)}°</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Longitude:</span>
+                      <span className="text-white">{latestData.location.longitude.toFixed(6)}°</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Accuracy:</span>
+                      <span className="text-white">±{latestData.location.accuracy || 10}m</span>
+                    </div>
+                    <div 
+                      className="text-sm font-medium mt-2"
+                      style={{ color: '#10b981' }}
+                    >
+                      GPS Active
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Last Update:</span>
-                    <span className="text-white">{formatTime(latestData.createdAt)}</span>
-                  </div>
-                  <div 
-                    className="text-sm font-medium mt-2"
-                    style={{ color: '#10b981' }}
-                  >
-                    Connected
-                  </div>
-                </div>
+                ) : (
+                  <div className="text-gray-400">No GPS data</div>
+                )}
               </div>
             </div>
 
