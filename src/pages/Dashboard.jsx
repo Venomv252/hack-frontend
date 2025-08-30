@@ -37,6 +37,10 @@ const Dashboard = () => {
   });
 
   const [emergencyContacts, setEmergencyContacts] = useState(user?.emergencyContacts || []);
+  
+  // Location state
+  const [locationPermission, setLocationPermission] = useState('unknown');
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   // Modal states
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -180,6 +184,109 @@ const Dashboard = () => {
     }
   };
 
+  // Request location permission
+  const requestLocationPermission = async () => {
+    try {
+      if (!navigator.geolocation) {
+        toast.error('Geolocation is not supported by this browser');
+        return false;
+      }
+
+      // Check current permission status
+      if (navigator.permissions) {
+        const permission = await navigator.permissions.query({ name: 'geolocation' });
+        setLocationPermission(permission.state);
+        
+        if (permission.state === 'granted') {
+          return true;
+        } else if (permission.state === 'denied') {
+          toast.error('Location permission denied. Please enable location access in browser settings.');
+          return false;
+        }
+      }
+
+      // Request permission by trying to get location
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocationPermission('granted');
+            setCurrentLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            });
+            resolve(true);
+          },
+          (error) => {
+            console.error('Location error:', error);
+            setLocationPermission('denied');
+            if (error.code === error.PERMISSION_DENIED) {
+              toast.error('Location permission denied. Please enable location access.');
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+              toast.error('Location information unavailable.');
+            } else if (error.code === error.TIMEOUT) {
+              toast.error('Location request timed out.');
+            }
+            resolve(false);
+          },
+          { timeout: 10000, enableHighAccuracy: true }
+        );
+      });
+    } catch (error) {
+      console.error('Permission request error:', error);
+      toast.error('Failed to request location permission');
+      return false;
+    }
+  };
+
+  // Get current location
+  const getCurrentLocation = async () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported'));
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          };
+          setCurrentLocation(location);
+          resolve(location);
+        },
+        (error) => {
+          console.error('Location error:', error);
+          reject(error);
+        },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    });
+  };
+
+  // Send current location to server
+  const sendLocationToServer = async (location) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${API_BASE_URL}/receive`, {
+        accelerometer: { x: 0, y: 0, z: 9.8 },
+        gyroscope: { x: 0, y: 0, z: 0 },
+        latitude: location.latitude,
+        longitude: location.longitude,
+        heartRate: 75,
+        temperature: 36.5,
+        batteryLevel: 85
+      }, {
+        headers: { 'x-auth-token': token }
+      });
+      console.log('Location sent to server:', response.data);
+    } catch (error) {
+      console.error('Failed to send location to server:', error);
+    }
+  };
+
   const handleShareLocation = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -194,7 +301,30 @@ const Dashboard = () => {
         return;
       }
 
-      toast.loading('Sending emergency location SMS...', { id: 'location-share' });
+      // Request location permission and get current location
+      toast.loading('Getting your location...', { id: 'location-share' });
+      
+      const hasPermission = await requestLocationPermission();
+      if (!hasPermission) {
+        toast.error('Location permission required for emergency sharing', { id: 'location-share' });
+        return;
+      }
+
+      // Get current location
+      let location;
+      try {
+        location = await getCurrentLocation();
+        console.log('Current location:', location);
+        
+        // Send location to server so it's available for emergency sharing
+        await sendLocationToServer(location);
+        
+        toast.loading('Sending emergency location SMS...', { id: 'location-share' });
+      } catch (locationError) {
+        console.error('Failed to get location:', locationError);
+        toast.error('Failed to get your current location', { id: 'location-share' });
+        return;
+      }
 
       let response;
       try {
@@ -540,9 +670,20 @@ const Dashboard = () => {
                   }}
                 >
                   <MapPin style={{ width: '24px', height: '24px', color: '#ef4444' }} />
-                  <div style={{ textAlign: 'left' }}>
+                  <div style={{ textAlign: 'left', flex: 1 }}>
                     <div className="text-white font-medium text-base">🚨 Share Location</div>
-                    <div className="text-gray-400 text-sm">Send emergency SMS with location to all contacts</div>
+                    <div className="text-gray-400 text-sm">
+                      Send emergency SMS with location to all contacts
+                      {locationPermission === 'granted' && currentLocation && (
+                        <span className="text-green-400 ml-2">📍 Location Ready</span>
+                      )}
+                      {locationPermission === 'denied' && (
+                        <span className="text-red-400 ml-2">❌ Location Denied</span>
+                      )}
+                      {locationPermission === 'unknown' && (
+                        <span className="text-yellow-400 ml-2">⚠️ Location Permission Needed</span>
+                      )}
+                    </div>
                   </div>
                 </button>
               </div>
