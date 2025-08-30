@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 const AuthContext = createContext()
 
@@ -72,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
   const loadUser = async () => {
     try {
-      const res = await axios.get('/api/users/profile')
+      const res = await axios.get(`${API_BASE_URL}/api/users/profile`)
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
@@ -91,14 +92,14 @@ export const AuthProvider = ({ children }) => {
       
       // Check if it's demo login
       if (email === 'rahul.sharma@smartsafetyband.com' && password === 'demo123') {
-        const res = await axios.post('/api/users/demo-login')
+        const res = await axios.post(`${API_BASE_URL}/api/users/demo-login`)
         dispatch({
           type: 'LOGIN_SUCCESS',
           payload: res.data
         })
         return { success: true }
       } else {
-        const res = await axios.post('/api/users/login', { email, password })
+        const res = await axios.post(`${API_BASE_URL}/api/users/login`, { email, password })
         dispatch({
           type: 'LOGIN_SUCCESS',
           payload: res.data
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      const res = await axios.post('/api/users/register', userData)
+      const res = await axios.post(`${API_BASE_URL}/api/users/register`, userData)
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: res.data
@@ -128,7 +129,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = async (userData) => {
     try {
-      const res = await axios.put('/api/users/profile', userData)
+      const res = await axios.put(`${API_BASE_URL}/api/users/profile`, userData)
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {

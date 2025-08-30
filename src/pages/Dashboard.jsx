@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
 const Dashboard = () => {
   const { user, updateUser } = useAuth();
@@ -59,7 +60,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       if (!token || !user) return;
 
-      const res = await axios.get('/api/activities?limit=4', {
+      const res = await axios.get(`${API_BASE_URL}/api/activities?limit=4`, {
         headers: { 'x-auth-token': token }
       });
       
@@ -114,7 +115,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       if (token) {
         // Create activity log
-        await axios.post('/api/activities', {
+        await axios.post(`${API_BASE_URL}/api/activities`, {
           type: 'emergency',
           message: 'Emergency test initiated successfully',
           status: 'success'
@@ -193,7 +194,7 @@ const Dashboard = () => {
         const token = localStorage.getItem('token');
         if (token) {
           try {
-            await axios.post('/api/activities', {
+            await axios.post(`${API_BASE_URL}/api/activities`, {
               type: 'system',
               message: profileForm.newPassword ? 'Profile and password updated' : 'Profile information updated',
               status: 'success'
