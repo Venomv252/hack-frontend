@@ -8,6 +8,7 @@ import Features from './pages/Features'
 import Dashboard from './pages/Dashboard'
 import ActivityLog from './pages/ActivityLog'
 import SensorData from './pages/SensorData'
+import VoiceSOSTest from './pages/VoiceSOSTest'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Contact from './pages/Contact'
@@ -24,6 +25,7 @@ function App() {
             <Route path="/features" element={<Features />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/activity-log" element={<ActivityLog />} />
+            <Route path="/voice-sos-test" element={<VoiceSOSTest />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/contact" element={<Contact />} />
