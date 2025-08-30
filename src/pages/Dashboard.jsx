@@ -14,7 +14,13 @@ import {
   User,
   Mail,
   Phone,
-  Lock
+  Lock,
+  Activity,
+  Heart,
+  Thermometer,
+  Battery,
+  TrendingUp,
+  Smartphone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -53,6 +59,12 @@ const Dashboard = () => {
   });
 
   const [recentActivity, setRecentActivity] = useState([]);
+  const [sensorData, setSensorData] = useState({
+    latest: null,
+    recent: [],
+    summary: null,
+    dataRetentionInfo: null
+  });
 
   // Fetch recent activities
   const fetchRecentActivities = async () => {
@@ -74,6 +86,28 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching activities:', error);
       setRecentActivity([]);
+    }
+  };
+
+  // Fetch sensor data for dashboard
+  const fetchSensorData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token || !user) return;
+
+      const res = await axios.get(`${API_BASE_URL}/api/sensor/dashboard`, {
+        headers: { 'x-auth-token': token }
+      });
+      
+      setSensorData(res.data);
+    } catch (error) {
+      console.error('Error fetching sensor data:', error);
+      setSensorData({
+        latest: null,
+        recent: [],
+        summary: null,
+        dataRetentionInfo: null
+      });
     }
   };
 
@@ -107,7 +141,19 @@ const Dashboard = () => {
         confirmPassword: ''
       });
       fetchRecentActivities();
+      fetchSensorData();
     }
+  }, [user]);
+
+  // Auto-refresh sensor data every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (user) {
+        fetchSensorData();
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [user]);
 
   const handleEmergencyTest = async () => {
@@ -131,6 +177,25 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error creating activity:', error);
       alert('Emergency test initiated! Your contacts would receive alerts.');
+    }
+  };
+
+  // Generate test sensor data
+  const generateTestData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`${API_BASE_URL}/api/sensor/test`, {}, {
+        headers: { 'x-auth-token': token }
+      });
+      
+      toast.success('Test sensor data generated successfully!');
+      
+      // Refresh sensor data and activities
+      fetchSensorData();
+      fetchRecentActivities();
+    } catch (error) {
+      console.error('Error generating test data:', error);
+      toast.error('Failed to generate test data');
     }
   };
 
@@ -422,6 +487,183 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* ESP32 Sensor Data Section */}
+          <div className="card" style={{ padding: '24px' }}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <Smartphone style={{ width: '20px', height: '20px' }} />
+                ESP32 Sensor Data
+              </h2>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={generateTestData}
+                  className="btn-secondary"
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '6px', 
+                    padding: '8px 12px', 
+                    fontSize: '14px'
+                  }}
+                >
+                  Generate Test Data
+                </button>
+                {sensorData.dataRetentionInfo && (
+                  <div className="text-xs text-gray-400">
+                    Auto-delete after {sensorData.dataRetentionInfo.retentionPeriod}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {!sensorData.latest ? (
+              <div className="text-center py-8">
+                <Smartphone className="mx-auto mb-4" style={{ width: '48px', height: '48px', color: '#6b7280' }} />
+                <h3 className="text-lg font-semibold text-white mb-2">No Sensor Data</h3>
+                <p className="text-gray-400 mb-4">
+                  No ESP32 data received yet. Generate test data or connect your device.
+                </p>
+                <button
+                  onClick={generateTestData}
+                  className="btn-primary"
+                >
+                  Generate Test Data
+                </button>
+              </div>
+            ) : (
+              <div>
+                {/* Latest Sensor Reading */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-white mb-4">Latest Reading</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Accelerometer */}
+                    {sensorData.latest.accelerometer && (
+                      <div className="p-4 bg-gray-800/50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Activity style={{ width: '16px', height: '16px', color: '#3b82f6' }} />
+                          <span className="text-sm font-medium text-gray-300">Accelerometer</span>
+                        </div>
+                        <div className="text-lg font-bold text-white mb-1">
+                          {sensorData.latest.totalAcceleration?.toFixed(2) || '0.00'}g
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          X: {sensorData.latest.accelerometer.x.toFixed(2)}g
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Gyroscope */}
+                    {sensorData.latest.gyroscope && (
+                      <div className="p-4 bg-gray-800/50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TrendingUp style={{ width: '16px', height: '16px', color: '#10b981' }} />
+                          <span className="text-sm font-medium text-gray-300">Gyroscope</span>
+                        </div>
+                        <div className="text-lg font-bold text-white mb-1">
+                          {sensorData.latest.totalRotation?.toFixed(2) || '0.00'}°/s
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          X: {sensorData.latest.gyroscope.x.toFixed(2)}°/s
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Heart Rate */}
+                    {sensorData.latest.heartRate && (
+                      <div className="p-4 bg-gray-800/50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Heart style={{ width: '16px', height: '16px', color: '#ef4444' }} />
+                          <span className="text-sm font-medium text-gray-300">Heart Rate</span>
+                        </div>
+                        <div className="text-lg font-bold text-white mb-1">
+                          {sensorData.latest.heartRate} BPM
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {sensorData.latest.heartRate > 100 ? 'High' : sensorData.latest.heartRate < 60 ? 'Low' : 'Normal'}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Temperature */}
+                    {sensorData.latest.temperature && (
+                      <div className="p-4 bg-gray-800/50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Thermometer style={{ width: '16px', height: '16px', color: '#f59e0b' }} />
+                          <span className="text-sm font-medium text-gray-300">Temperature</span>
+                        </div>
+                        <div className="text-lg font-bold text-white mb-1">
+                          {sensorData.latest.temperature.toFixed(1)}°C
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {sensorData.latest.temperature > 37.5 ? 'High' : sensorData.latest.temperature < 36 ? 'Low' : 'Normal'}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Summary Statistics */}
+                {sensorData.summary && sensorData.summary.totalReadings > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium text-white mb-4">Last 30 Minutes Summary</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-gray-800/30 rounded-lg">
+                        <div className="text-2xl font-bold text-white">{sensorData.summary.totalReadings}</div>
+                        <div className="text-sm text-gray-400">Total Readings</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-800/30 rounded-lg">
+                        <div className="text-2xl font-bold text-yellow-400">{sensorData.summary.fallCount}</div>
+                        <div className="text-sm text-gray-400">Fall Alerts</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-800/30 rounded-lg">
+                        <div className="text-2xl font-bold text-red-400">{sensorData.summary.emergencyCount}</div>
+                        <div className="text-sm text-gray-400">Emergency Alerts</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-800/30 rounded-lg">
+                        <div className="text-2xl font-bold text-green-400">
+                          {sensorData.summary.avgBatteryLevel ? Math.round(sensorData.summary.avgBatteryLevel) + '%' : 'N/A'}
+                        </div>
+                        <div className="text-sm text-gray-400">Avg Battery</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Readings */}
+                {sensorData.recent && sensorData.recent.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-4">Recent Readings</h3>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {sensorData.recent.slice(0, 5).map((reading, index) => (
+                        <div key={reading.id || index} className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-3 h-3 rounded-full"
+                              style={{ 
+                                backgroundColor: reading.status === 'emergency' ? '#ef4444' : 
+                                               reading.status === 'fall' ? '#f59e0b' : '#10b981' 
+                              }}
+                            />
+                            <div className="text-sm text-white">
+                              {reading.status === 'emergency' ? 'Emergency Alert' : 
+                               reading.status === 'fall' ? 'Fall Detected' : 'Normal Reading'}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 text-xs text-gray-400">
+                            {reading.totalAcceleration && (
+                              <span>{reading.totalAcceleration.toFixed(1)}g</span>
+                            )}
+                            <span>{formatRelativeTime(reading.timestamp)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Emergency Contacts and Safety Score Row */}
