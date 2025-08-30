@@ -201,6 +201,14 @@ const Navbar = () => {
               >
                 Dashboard
               </Link>
+              <Link
+                to="/sensor-data"
+                style={loginButtonStyle}
+                onMouseOver={(e) => e.target.style.color = 'white'}
+                onMouseOut={(e) => e.target.style.color = '#d1d5db'}
+              >
+                Sensors
+              </Link>
               <button
                 onClick={handleLogout}
                 style={getStartedButtonStyle}
