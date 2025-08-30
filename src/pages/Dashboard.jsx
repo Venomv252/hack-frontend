@@ -480,6 +480,20 @@ const Dashboard = () => {
                 ESP32 Sensor Data
               </h2>
               <div className="flex items-center gap-3">
+                <Link
+                  to="/sensor-data"
+                  className="btn-secondary"
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '6px', 
+                    padding: '8px 12px', 
+                    fontSize: '14px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  See All Readings
+                </Link>
                 {sensorData.dataRetentionInfo && (
                   <div className="text-xs text-gray-400">
                     Auto-delete after {sensorData.dataRetentionInfo.retentionPeriod}
@@ -502,9 +516,9 @@ const Dashboard = () => {
               </div>
             ) : (
               <div>
-                {/* Latest Sensor Reading */}
+                {/* Latest Sensor Readings */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-medium text-white mb-4">Latest Reading</h3>
+                  <h3 className="text-lg font-medium text-white mb-4">Latest Sensor Readings</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Accelerometer */}
                     {sensorData.latest.accelerometer && (
@@ -516,8 +530,10 @@ const Dashboard = () => {
                         <div className="text-lg font-bold text-white mb-1">
                           {sensorData.latest.totalAcceleration?.toFixed(2) || '0.00'}g
                         </div>
-                        <div className="text-xs text-gray-400">
-                          X: {sensorData.latest.accelerometer.x.toFixed(2)}g
+                        <div className="text-xs text-gray-400 space-y-1">
+                          <div>X: {sensorData.latest.accelerometer.x.toFixed(2)}g</div>
+                          <div>Y: {sensorData.latest.accelerometer.y.toFixed(2)}g</div>
+                          <div>Z: {sensorData.latest.accelerometer.z.toFixed(2)}g</div>
                         </div>
                       </div>
                     )}
@@ -532,68 +548,72 @@ const Dashboard = () => {
                         <div className="text-lg font-bold text-white mb-1">
                           {sensorData.latest.totalRotation?.toFixed(2) || '0.00'}°/s
                         </div>
-                        <div className="text-xs text-gray-400">
-                          X: {sensorData.latest.gyroscope.x.toFixed(2)}°/s
+                        <div className="text-xs text-gray-400 space-y-1">
+                          <div>X: {sensorData.latest.gyroscope.x.toFixed(2)}°/s</div>
+                          <div>Y: {sensorData.latest.gyroscope.y.toFixed(2)}°/s</div>
+                          <div>Z: {sensorData.latest.gyroscope.z.toFixed(2)}°/s</div>
                         </div>
                       </div>
                     )}
 
-                    {/* Heart Rate */}
-                    {sensorData.latest.heartRate && (
+                    {/* Latitude */}
+                    {sensorData.latest.location && (
                       <div className="p-4 bg-gray-800/50 rounded-lg">
                         <div className="flex items-center gap-2 mb-2">
-                          <Heart style={{ width: '16px', height: '16px', color: '#ef4444' }} />
-                          <span className="text-sm font-medium text-gray-300">Heart Rate</span>
+                          <MapPin style={{ width: '16px', height: '16px', color: '#10b981' }} />
+                          <span className="text-sm font-medium text-gray-300">Latitude</span>
                         </div>
                         <div className="text-lg font-bold text-white mb-1">
-                          {sensorData.latest.heartRate} BPM
+                          {sensorData.latest.location.latitude.toFixed(6)}°
                         </div>
                         <div className="text-xs text-gray-400">
-                          {sensorData.latest.heartRate > 100 ? 'High' : sensorData.latest.heartRate < 60 ? 'Low' : 'Normal'}
+                          North/South Position
                         </div>
                       </div>
                     )}
 
-                    {/* Temperature */}
-                    {sensorData.latest.temperature && (
+                    {/* Longitude */}
+                    {sensorData.latest.location && (
                       <div className="p-4 bg-gray-800/50 rounded-lg">
                         <div className="flex items-center gap-2 mb-2">
-                          <Thermometer style={{ width: '16px', height: '16px', color: '#f59e0b' }} />
-                          <span className="text-sm font-medium text-gray-300">Temperature</span>
+                          <MapPin style={{ width: '16px', height: '16px', color: '#10b981' }} />
+                          <span className="text-sm font-medium text-gray-300">Longitude</span>
                         </div>
                         <div className="text-lg font-bold text-white mb-1">
-                          {sensorData.latest.temperature.toFixed(1)}°C
+                          {sensorData.latest.location.longitude.toFixed(6)}°
                         </div>
                         <div className="text-xs text-gray-400">
-                          {sensorData.latest.temperature > 37.5 ? 'High' : sensorData.latest.temperature < 36 ? 'Low' : 'Normal'}
+                          East/West Position
                         </div>
                       </div>
                     )}
                   </div>
+                  
+                  {/* Show message if no sensor data */}
+                  {(!sensorData.latest.accelerometer && !sensorData.latest.gyroscope && !sensorData.latest.location) && (
+                    <div className="p-4 bg-gray-800/30 rounded-lg text-center">
+                      <Smartphone className="mx-auto mb-2" style={{ width: '24px', height: '24px', color: '#6b7280' }} />
+                      <div className="text-gray-400">No sensor data available</div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Summary Statistics */}
                 {sensorData.summary && sensorData.summary.totalReadings > 0 && (
                   <div className="mb-6">
                     <h3 className="text-lg font-medium text-white mb-4">Last 30 Minutes Summary</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-gray-800/30 rounded-lg">
                         <div className="text-2xl font-bold text-white">{sensorData.summary.totalReadings}</div>
                         <div className="text-sm text-gray-400">Total Readings</div>
                       </div>
                       <div className="text-center p-4 bg-gray-800/30 rounded-lg">
                         <div className="text-2xl font-bold text-yellow-400">{sensorData.summary.fallCount}</div>
-                        <div className="text-sm text-gray-400">Fall Alerts</div>
+                        <div className="text-sm text-gray-400">Fall Detections</div>
                       </div>
                       <div className="text-center p-4 bg-gray-800/30 rounded-lg">
                         <div className="text-2xl font-bold text-red-400">{sensorData.summary.emergencyCount}</div>
                         <div className="text-sm text-gray-400">Emergency Alerts</div>
-                      </div>
-                      <div className="text-center p-4 bg-gray-800/30 rounded-lg">
-                        <div className="text-2xl font-bold text-green-400">
-                          {sensorData.summary.avgBatteryLevel ? Math.round(sensorData.summary.avgBatteryLevel) + '%' : 'N/A'}
-                        </div>
-                        <div className="text-sm text-gray-400">Avg Battery</div>
                       </div>
                     </div>
                   </div>
@@ -602,31 +622,87 @@ const Dashboard = () => {
                 {/* Recent Readings */}
                 {sensorData.recent && sensorData.recent.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-4">Recent Readings</h3>
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-medium text-white">Recent Readings</h3>
+                      <Link
+                        to="/sensor-data"
+                        className="text-blue-400 hover:text-blue-300 text-sm"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        View All →
+                      </Link>
+                    </div>
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
                       {sensorData.recent.slice(0, 5).map((reading, index) => (
-                        <div key={reading.id || index} className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{ 
-                                backgroundColor: reading.status === 'emergency' ? '#ef4444' : 
-                                               reading.status === 'fall' ? '#f59e0b' : '#10b981' 
-                              }}
-                            />
-                            <div className="text-sm text-white">
-                              {reading.status === 'emergency' ? 'Emergency Alert' : 
-                               reading.status === 'fall' ? 'Fall Detected' : 'Normal Reading'}
+                        <div key={reading.id || index} className="p-4 bg-gray-800/30 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ 
+                                  backgroundColor: reading.status === 'emergency' ? '#ef4444' : 
+                                                 reading.status === 'fall' ? '#f59e0b' : '#10b981' 
+                                }}
+                              />
+                              <div className="text-sm font-medium text-white">
+                                {reading.status === 'emergency' ? 'Emergency Alert' : 
+                                 reading.status === 'fall' ? 'Fall Detected' : 'Normal Reading'}
+                              </div>
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {formatRelativeTime(reading.timestamp)}
                             </div>
                           </div>
-                          <div className="flex items-center gap-4 text-xs text-gray-400">
+                          
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                             {reading.totalAcceleration && (
-                              <span>{reading.totalAcceleration.toFixed(1)}g</span>
+                              <div className="flex items-center gap-1">
+                                <Activity style={{ width: '12px', height: '12px', color: '#3b82f6' }} />
+                                <span className="text-gray-400">Accel:</span>
+                                <span className="text-white">{reading.totalAcceleration.toFixed(1)}g</span>
+                              </div>
                             )}
-                            <span>{formatRelativeTime(reading.timestamp)}</span>
+                            {reading.totalRotation && (
+                              <div className="flex items-center gap-1">
+                                <TrendingUp style={{ width: '12px', height: '12px', color: '#10b981' }} />
+                                <span className="text-gray-400">Gyro:</span>
+                                <span className="text-white">{reading.totalRotation.toFixed(1)}°/s</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <Clock style={{ width: '12px', height: '12px', color: '#6b7280' }} />
+                              <span className="text-gray-400">Device:</span>
+                              <span className="text-white">{reading.deviceId || 'ESP32_001'}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Smartphone style={{ width: '12px', height: '12px', color: '#6b7280' }} />
+                              <span className="text-gray-400">Status:</span>
+                              <span 
+                                className="font-medium"
+                                style={{ 
+                                  color: reading.status === 'emergency' ? '#ef4444' : 
+                                         reading.status === 'fall' ? '#f59e0b' : '#10b981' 
+                                }}
+                              >
+                                {reading.status === 'emergency' ? 'Alert' : 
+                                 reading.status === 'fall' ? 'Fall' : 'OK'}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Show message when no recent readings */}
+                {(!sensorData.recent || sensorData.recent.length === 0) && sensorData.latest && (
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-4">Recent Readings</h3>
+                    <div className="p-4 bg-gray-800/30 rounded-lg text-center">
+                      <Clock className="mx-auto mb-2" style={{ width: '24px', height: '24px', color: '#6b7280' }} />
+                      <div className="text-gray-400">No recent readings available</div>
+                      <div className="text-xs text-gray-500 mt-1">Only latest reading is shown above</div>
                     </div>
                   </div>
                 )}
