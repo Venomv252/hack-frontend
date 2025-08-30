@@ -180,24 +180,7 @@ const Dashboard = () => {
     }
   };
 
-  // Generate test sensor data
-  const generateTestData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.post(`${API_BASE_URL}/api/sensor/test`, {}, {
-        headers: { 'x-auth-token': token }
-      });
-      
-      toast.success('Test sensor data generated successfully!');
-      
-      // Refresh sensor data and activities
-      fetchSensorData();
-      fetchRecentActivities();
-    } catch (error) {
-      console.error('Error generating test data:', error);
-      toast.error('Failed to generate test data');
-    }
-  };
+
 
   // Profile update handlers
   const handleProfileUpdate = async () => {
@@ -497,19 +480,6 @@ const Dashboard = () => {
                 ESP32 Sensor Data
               </h2>
               <div className="flex items-center gap-3">
-                <button
-                  onClick={generateTestData}
-                  className="btn-secondary"
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '6px', 
-                    padding: '8px 12px', 
-                    fontSize: '14px'
-                  }}
-                >
-                  Generate Test Data
-                </button>
                 {sensorData.dataRetentionInfo && (
                   <div className="text-xs text-gray-400">
                     Auto-delete after {sensorData.dataRetentionInfo.retentionPeriod}
@@ -523,14 +493,12 @@ const Dashboard = () => {
                 <Smartphone className="mx-auto mb-4" style={{ width: '48px', height: '48px', color: '#6b7280' }} />
                 <h3 className="text-lg font-semibold text-white mb-2">No Sensor Data</h3>
                 <p className="text-gray-400 mb-4">
-                  No ESP32 data received yet. Generate test data or connect your device.
+                  No ESP32 data received yet. Make sure your device is connected and sending data.
                 </p>
-                <button
-                  onClick={generateTestData}
-                  className="btn-primary"
-                >
-                  Generate Test Data
-                </button>
+                <div className="text-sm text-gray-500">
+                  <p>ESP32 should send data to: <code className="bg-gray-800 px-2 py-1 rounded">POST /receive</code></p>
+                  <p className="mt-2">Expected format: <code className="bg-gray-800 px-2 py-1 rounded">{"{"}"accelerometer": {"{"}"x": 1.2, "y": -0.5, "z": 9.8{"}"}, "gyroscope": {"{"}"x": 10, "y": -5, "z": 2{"}"}, "latitude": 28.6118, "longitude": 77.0378{"}"}</code></p>
+                </div>
               </div>
             ) : (
               <div>
