@@ -180,6 +180,60 @@ const Dashboard = () => {
     }
   };
 
+  const handleShareLocation = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please log in to share location');
+        return;
+      }
+
+      // Check if user has emergency contacts
+      if (!emergencyContacts || emergencyContacts.length === 0) {
+        toast.error('Please add emergency contacts first');
+        return;
+      }
+
+      toast.loading('Sending emergency location SMS...', { id: 'location-share' });
+
+      const response = await axios.post(`${API_BASE_URL}/api/emergency/share-location`, {}, {
+        headers: { 'x-auth-token': token }
+      });
+
+      const { results, errors, summary } = response.data;
+
+      if (summary.successful > 0) {
+        toast.success(
+          `Location shared successfully! ${summary.successful}/${summary.totalContacts} contacts notified.`,
+          { id: 'location-share', duration: 5000 }
+        );
+
+        // Log successful contacts
+        results.forEach(result => {
+          console.log(`✅ SMS sent to ${result.contact}: ${result.messageSid}`);
+        });
+
+        // Log any errors
+        if (errors.length > 0) {
+          console.warn('Some contacts could not be reached:', errors);
+          toast.error(`${errors.length} contacts could not be reached`, { duration: 3000 });
+        }
+
+      } else {
+        toast.error('Failed to send location to any contacts', { id: 'location-share' });
+      }
+
+    } catch (error) {
+      console.error('Error sharing location:', error);
+      
+      if (error.response?.status === 404 && error.response?.data?.message === 'No location data available') {
+        toast.error('No GPS location available. Please ensure your device is sending location data.', { id: 'location-share' });
+      } else {
+        toast.error('Failed to share location. Please try again.', { id: 'location-share' });
+      }
+    }
+  };
+
 
 
   // Profile update handlers
@@ -441,11 +495,12 @@ const Dashboard = () => {
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <button 
+                  onClick={handleShareLocation}
                   className="transition-all"
                   style={{ 
                     padding: '16px', 
-                    background: 'rgba(59, 130, 246, 0.1)', 
-                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    background: 'rgba(239, 68, 68, 0.1)', 
+                    border: '1px solid rgba(239, 68, 68, 0.2)',
                     borderRadius: '8px',
                     cursor: 'pointer',
                     display: 'flex',
@@ -454,18 +509,18 @@ const Dashboard = () => {
                     width: '100%'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(59, 130, 246, 0.15)'
-                    e.target.style.borderColor = 'rgba(59, 130, 246, 0.3)'
+                    e.target.style.background = 'rgba(239, 68, 68, 0.15)'
+                    e.target.style.borderColor = 'rgba(239, 68, 68, 0.3)'
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(59, 130, 246, 0.1)'
-                    e.target.style.borderColor = 'rgba(59, 130, 246, 0.2)'
+                    e.target.style.background = 'rgba(239, 68, 68, 0.1)'
+                    e.target.style.borderColor = 'rgba(239, 68, 68, 0.2)'
                   }}
                 >
-                  <MapPin style={{ width: '24px', height: '24px', color: '#60a5fa' }} />
+                  <MapPin style={{ width: '24px', height: '24px', color: '#ef4444' }} />
                   <div style={{ textAlign: 'left' }}>
-                    <div className="text-white font-medium text-base">Share Location</div>
-                    <div className="text-gray-400 text-sm">Send current location to emergency contacts</div>
+                    <div className="text-white font-medium text-base">🚨 Share Location</div>
+                    <div className="text-gray-400 text-sm">Send emergency SMS with location to all contacts</div>
                   </div>
                 </button>
               </div>
