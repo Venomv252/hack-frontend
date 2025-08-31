@@ -119,13 +119,34 @@ const WhatsAppManager = () => {
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+        <div className="flex items-center gap-6">
+          <div style={{
+            width: '64px',
+            height: '64px',
+            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+            borderRadius: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 25px rgba(34, 197, 94, 0.3)'
+          }}>
             <MessageCircle className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold text-white">WhatsApp Integration</h2>
-            <p className="text-gray-400 text-lg">Connect your WhatsApp for emergency messaging</p>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              color: 'white',
+              marginBottom: '4px',
+              letterSpacing: '-0.5px',
+              paddingLeft:'20px'
+            }}>WhatsApp Integration</h2>
+            <p style={{
+              color: '#9ca3af',
+              fontSize: '1rem',
+              fontWeight: '400',
+              paddingLeft:'20px'
+            }}>Connect your WhatsApp for emergency messaging</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -146,10 +167,26 @@ const WhatsAppManager = () => {
           </div>
           <button
             onClick={checkWhatsAppStatus}
-            className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '8px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              color: '#9ca3af'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.05)'
+              e.target.style.color = '#d1d5db'
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent'
+              e.target.style.color = '#9ca3af'
+            }}
             title="Refresh status"
           >
-            <RefreshCw className="w-5 h-5 text-gray-400" />
+            <RefreshCw className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -227,7 +264,36 @@ const WhatsAppManager = () => {
             <button
               onClick={connectWhatsApp}
               disabled={loading}
-              className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              style={{
+                flex: 1,
+                background: loading ? '#4b5563' : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                color: 'white',
+                fontWeight: '600',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: loading ? 'none' : '0 6px 20px rgba(34, 197, 94, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.target.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)'
+                  e.target.style.transform = 'translateY(-1px)'
+                  e.target.style.boxShadow = '0 8px 25px rgba(34, 197, 94, 0.4)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.target.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = '0 6px 20px rgba(34, 197, 94, 0.3)'
+                }
+              }}
             >
               {loading ? (
                 <RefreshCw className="animate-spin" style={{ width: '16px', height: '16px' }} />
@@ -240,7 +306,36 @@ const WhatsAppManager = () => {
             <button
               onClick={disconnectWhatsApp}
               disabled={loading}
-              className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              style={{
+                flex: 1,
+                background: loading ? '#4b5563' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                color: 'white',
+                fontWeight: '600',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: loading ? 'none' : '0 6px 20px rgba(239, 68, 68, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.target.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)'
+                  e.target.style.transform = 'translateY(-1px)'
+                  e.target.style.boxShadow = '0 8px 25px rgba(239, 68, 68, 0.4)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.target.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.3)'
+                }
+              }}
             >
               {loading ? (
                 <RefreshCw className="animate-spin" style={{ width: '16px', height: '16px' }} />
@@ -254,7 +349,30 @@ const WhatsAppManager = () => {
           {whatsappStatus.qrCode && (
             <button
               onClick={() => setShowQR(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                color: 'white',
+                fontWeight: '600',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 6px 20px rgba(59, 130, 246, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
+                e.target.style.transform = 'translateY(-1px)'
+                e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)'
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+                e.target.style.transform = 'translateY(0)'
+                e.target.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.3)'
+              }}
             >
               <QrCode style={{ width: '16px', height: '16px' }} />
               Show QR

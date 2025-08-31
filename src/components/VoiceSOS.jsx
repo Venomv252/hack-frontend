@@ -34,14 +34,14 @@ const VoiceSOS = () => {
 
   const requestMicrophonePermission = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
-        } 
+        }
       });
-      
+
       // Test if we can access the microphone
       const tracks = stream.getAudioTracks();
       if (tracks.length > 0) {
@@ -66,12 +66,12 @@ const VoiceSOS = () => {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
-        } 
+        }
       });
 
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -86,7 +86,7 @@ const VoiceSOS = () => {
 
       setIsListening(true);
       toast.success('Voice monitoring started! Scream loudly to trigger SOS.');
-      
+
       // Start analyzing audio
       analyzeAudio();
     } catch (error) {
@@ -118,20 +118,20 @@ const VoiceSOS = () => {
     if (!analyserRef.current || !dataArrayRef.current) return;
 
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-    
+
     // Calculate average volume
     let sum = 0;
     for (let i = 0; i < dataArrayRef.current.length; i++) {
       sum += dataArrayRef.current[i];
     }
     const average = sum / dataArrayRef.current.length;
-    
+
     setAudioLevel(average);
 
     // Check for sustained loud noise (screaming)
     if (average > SCREAM_THRESHOLD) {
       sustainedLoudnessRef.current += 50; // Assuming ~50ms per frame
-      
+
       if (sustainedLoudnessRef.current >= SUSTAINED_DURATION && !isSOSActive) {
         triggerSOS();
       }
@@ -198,7 +198,7 @@ const VoiceSOS = () => {
       });
 
       if (response.data.success) {
-        toast.success('🚨 SOS sent successfully via WhatsApp!', { 
+        toast.success('🚨 SOS sent successfully via WhatsApp!', {
           id: 'sos-send',
           duration: 5000,
           style: {
@@ -229,8 +229,20 @@ const VoiceSOS = () => {
             <Volume2 className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold text-white">Voice-Activated SOS</h2>
-            <p className="text-gray-400 text-lg">Emergency detection through voice monitoring</p>
+            <h2 style={{
+              fontSize: '1.75rem',
+              fontWeight: '700',
+              color: 'white',
+              marginBottom: '4px',
+              letterSpacing: '-0.5px',
+              paddingLeft: '20px'
+            }}>Voice-Activated SOS</h2>
+            <p style={{
+              color: '#9ca3af',
+              fontSize: '1rem',
+              fontWeight: '400',
+              paddingLeft: '20px'
+            }}>Emergency detection through voice monitoring</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -245,7 +257,7 @@ const VoiceSOS = () => {
 
       {/* SOS Countdown Modal */}
       {isSOSActive && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
           style={{ zIndex: 9999 }}
         >
@@ -291,12 +303,12 @@ const VoiceSOS = () => {
               <span className="text-white font-bold text-lg">{Math.round(audioLevel)}/255</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-4 mb-4">
-              <div 
+              <div
                 className="h-4 rounded-full transition-all duration-100"
-                style={{ 
+                style={{
                   width: `${(audioLevel / 255) * 100}%`,
-                  background: audioLevel > SCREAM_THRESHOLD 
-                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' 
+                  background: audioLevel > SCREAM_THRESHOLD
+                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
                     : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
                 }}
               />
@@ -317,6 +329,7 @@ const VoiceSOS = () => {
             <button
               onClick={startListening}
               className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
+              style={{background:'green'}}
             >
               <Mic className="w-6 h-6" />
               Start Voice Monitoring

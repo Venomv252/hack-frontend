@@ -178,6 +178,18 @@ body {
   gap: 20px;
 }
 
+.gap-3 {
+  gap: 12px;
+}
+
+.gap-4 {
+  gap: 16px;
+}
+
+.gap-6 {
+  gap: 24px;
+}
+
 .grid-cols-1 {
   grid-template-columns: repeat(1, 1fr);
 }
@@ -220,6 +232,10 @@ body {
   .lg\\:grid-cols-4 {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .lg\\:grid-cols-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 
 /* Flexbox Utilities */
@@ -251,12 +267,28 @@ body {
   margin-left: 16px;
 }
 
+.space-y-1>*+* {
+  margin-top: 4px;
+}
+
+.space-y-2>*+* {
+  margin-top: 8px;
+}
+
+.space-y-3>*+* {
+  margin-top: 12px;
+}
+
 .space-y-4>*+* {
   margin-top: 16px;
 }
 
 .space-y-6>*+* {
   margin-top: 24px;
+}
+
+.space-y-8>*+* {
+  margin-top: 32px;
 }
 
 /* Text Utilities */
@@ -415,6 +447,14 @@ body {
   min-height: 100vh;
 }
 
+.max-w-4xl {
+  max-width: 56rem;
+}
+
+.max-w-6xl {
+  max-width: 72rem;
+}
+
 /* Positioning */
 .relative {
   position: relative;
@@ -491,9 +531,56 @@ body {
     padding-top: 32px;
     padding-bottom: 32px;
   }
+
+  /* Dashboard specific mobile styles */
+  .dashboard-header h1 {
+    font-size: 2rem !important;
+  }
+
+  .dashboard-header p {
+    font-size: 1rem !important;
+  }
+
+  .dashboard-card {
+    padding: 16px !important;
+  }
+
+  .dashboard-card h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .dashboard-icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .dashboard-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .grid-cols-1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lg\\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lg\\:grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lg\\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .lg\\:grid-cols-6 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
-/* / * Navbar Specific Styles */  
+/* Navbar Specific Styles */
 .navbar-logo {
   transition: transform 0.3s ease;
 }
@@ -520,8 +607,9 @@ body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
-}/* Feat
-ures Grid Responsive Styles */
+}
+
+/* Features Grid Responsive Styles */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
